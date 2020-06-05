@@ -51,12 +51,28 @@ def main():
 
     screen = pygame.display.set_mode((800, 600))
 
-    uielement = UIElement(
-        center_position=(400, 400),
+    gameTitle = UIElement(
+        center_position=(400, 75),
+        font_size=60,
+        bg_rgb=BLUE,
+        text_rgb=WHITE,
+        text='Tumble Rumble'
+    )
+
+    startGame = UIElement(
+        center_position=(400, 175),
         font_size=30,
         bg_rgb=BLUE,
         text_rgb=WHITE,
-        text='Hello World'
+        text='Start Game'
+    )
+
+    exitGame = UIElement(
+        center_position=(400, 225),
+        font_size=30,
+        bg_rgb=BLUE,
+        text_rgb=WHITE,
+        text='Exit Game'
     )
 
     while True:
@@ -65,8 +81,11 @@ def main():
                 return
         screen.fill(BLUE)
 
-        uielement.update(pygame.mouse.get_pos())
-        uielement.draw(screen)
+        gameTitle.draw(screen)
+        startGame.update(pygame.mouse.get_pos())
+        startGame.draw(screen)
+        exitGame.update(pygame.mouse.get_pos())
+        exitGame.draw(screen)
         pygame.display.flip()
 
 main()
