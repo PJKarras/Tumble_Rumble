@@ -67,8 +67,16 @@ def main():
         text='Start Game'
     )
 
-    exitGame = UIElement(
+    optionButton = UIElement(
         center_position=(400, 225),
+        font_size=30,
+        bg_rgb=BLUE,
+        text_rgb=WHITE,
+        text='Options'
+    )
+
+    exitGame = UIElement(
+        center_position=(400, 275),
         font_size=30,
         bg_rgb=BLUE,
         text_rgb=WHITE,
@@ -79,11 +87,17 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if exitGame.rect.collidepoint(pos):
+                    return
         screen.fill(BLUE)
 
         gameTitle.draw(screen)
         startGame.update(pygame.mouse.get_pos())
         startGame.draw(screen)
+        optionButton.update(pygame.mouse.get_pos())
+        optionButton.draw(screen)
         exitGame.update(pygame.mouse.get_pos())
         exitGame.draw(screen)
         pygame.display.flip()
