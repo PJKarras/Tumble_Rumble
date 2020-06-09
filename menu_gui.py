@@ -46,6 +46,41 @@ class UIElement(Sprite):
         surface.blit(self.image, self.rect)
 
 
+def optionsMenu(screen):
+
+    optionTitle = UIElement(
+        center_position=(400, 75),
+        font_size=60,
+        bg_rgb=BLUE,
+        text_rgb=WHITE,
+        text='Options'
+    )
+
+    returnButton = UIElement(
+        center_position=(200, 550),
+        font_size=20,
+        bg_rgb=BLUE,
+        text_rgb=WHITE,
+        text='Return to Main Menu'
+    )
+
+    while True:
+        screen.fill(BLUE)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if returnButton.rect.collidepoint(pos):
+                    return
+
+        optionTitle.draw(screen)
+        returnButton.update(pygame.mouse.get_pos())
+        returnButton.draw(screen)
+        pygame.display.flip()
+
+
 def main():
     pygame.init()
 
@@ -91,6 +126,8 @@ def main():
                 pos = pygame.mouse.get_pos()
                 if exitGame.rect.collidepoint(pos):
                     return
+                if optionButton.rect.collidepoint(pos):
+                    optionsMenu(screen);
         screen.fill(BLUE)
 
         gameTitle.draw(screen)
