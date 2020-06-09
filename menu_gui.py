@@ -5,6 +5,12 @@ from pygame.rect import Rect
 
 BLUE = (106, 150, 181)
 WHITE = (255, 255, 255)
+right_arrow = pygame.image.load('arrow.png')
+right_arrow = pygame.transform.scale(right_arrow, (100, 80))
+left_arrow = pygame.transform.flip(right_arrow, True, False)
+right_arrowX = 470
+right_arrowY = 200
+left_arrowX = 230
 
 
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
@@ -120,6 +126,8 @@ def startMenu(screen):
                     done = True
 
         how_many_title.draw(screen)
+        screen.blit(right_arrow, (right_arrowX, right_arrowY))
+        screen.blit(left_arrow, (left_arrowX, right_arrowY))
         startButton.update(pygame.mouse.get_pos())
         startButton.draw(screen)
         returnButton.update(pygame.mouse.get_pos())
