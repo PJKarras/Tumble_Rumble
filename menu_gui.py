@@ -63,8 +63,8 @@ def optionsMenu(screen):
         text_rgb=WHITE,
         text='Return to Main Menu'
     )
-
-    while True:
+    done = False
+    while not done:
         screen.fill(BLUE)
 
         for event in pygame.event.get():
@@ -73,9 +73,55 @@ def optionsMenu(screen):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if returnButton.rect.collidepoint(pos):
-                    return
+                    done = True
 
         optionTitle.draw(screen)
+        returnButton.update(pygame.mouse.get_pos())
+        returnButton.draw(screen)
+        pygame.display.flip()
+
+
+def startMenu(screen):
+    how_many_title = UIElement(
+        center_position=(400, 100),
+        font_size=55,
+        bg_rgb=BLUE,
+        text_rgb=WHITE,
+        text='How many players?'
+    )
+
+    startButton = UIElement(
+        center_position=(400, 450),
+        font_size=30,
+        bg_rgb=BLUE,
+        text_rgb=WHITE,
+        text='Start'
+    )
+
+    returnButton = UIElement(
+        center_position=(200, 550),
+        font_size=20,
+        bg_rgb=BLUE,
+        text_rgb=WHITE,
+        text='Return to Main Menu'
+    )
+    done = False
+    while not done:
+        screen.fill(BLUE)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if startButton.rect.collidepoint(pos):
+                    done = True
+                if returnButton.rect.collidepoint(pos):
+                    done = True
+
+        how_many_title.draw(screen)
+        startButton.update(pygame.mouse.get_pos())
+        startButton.draw(screen)
         returnButton.update(pygame.mouse.get_pos())
         returnButton.draw(screen)
         pygame.display.flip()
@@ -117,17 +163,19 @@ def main():
         text_rgb=WHITE,
         text='Exit Game'
     )
-
-    while True:
+    done = False
+    while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
+                done = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if exitGame.rect.collidepoint(pos):
-                    return
+                    done = True
+                if startGame.rect.collidepoint(pos):
+                    startMenu(screen)
                 if optionButton.rect.collidepoint(pos):
-                    optionsMenu(screen);
+                    optionsMenu(screen)
         screen.fill(BLUE)
 
         gameTitle.draw(screen)
