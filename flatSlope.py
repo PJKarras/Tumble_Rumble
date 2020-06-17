@@ -1,7 +1,58 @@
 import os, sys
 import pygame
 import numpy
+import perlin
 from pygame.locals import *
+
+def get_random_pix_map(displayW, displayH):
+
+    # Creation of 2d pixel matrix, will store 1's for ground, 0 for sky
+    pixelMatrix = numpy.zeros((displayH, displayW))
+
+    # Declare surface for terrain (used to draw terrain on window)
+    surf = pygame.Surface((displayW,displayH))
+    surf = surf.convert_alpha()
+    transperantFill = (0, 0, 255, 0)
+    surf.fill(transperantFill)
+
+    # Declare pixel array, to be used to tell pygame where to fill with color
+    par = pygame.PixelArray(surf)
+
+    # Pixel  representation of the bottom of window (addresses start at 0)
+    bottomOfWindow = displayH
+    
+    # Randomly generate heights
+    # ratio of points (hills) to pixels
+    ratio_hills_pixels = 3.0/200.0
+    #frequency = int(ratio_hills_pixels * float(displayW))
+    frequency = 5
+
+    noise = perlin.Perlin(frequency)
+    x_vals = [x for x in range(displayW)]
+    y_vals = [noise.valueAt(x) for x in x_vals]
+
+    old_max_y = max(y_vals)
+    old_min_y = min(y_vals)
+    old_range = old_max_y - old_min_y
+
+    new_max_y = 1.0
+    new_min_y = 0
+    new_range = new_max_y - new_min_y
+
+    GREEN = (0, 110, 0)
+
+    norm = lambda oldVal: (((oldVal - old_min_y) * new_range) / old_range) + new_min_y
+
+    y_vals_norm = [norm(i) for i in y_vals]
+    for x in range(displayW):
+        currentHeight = int(y_vals_norm[x] * displayH)
+        par[x,currentHeight:bottomOfWindow] = GREEN
+        # Set 1 values for pixel matrix
+        for index in range(displayH-1, currentHeight, -1):
+            pixelMatrix[index][x] = 1
+    par.close()
+    DISPLAYSURF.blit(surf, (0,0))
+    return pixelMatrix
 
 def get_slope_pix_map(displayW, displayH, stepSize, minH, maxH, color, direction):
     """ Draws a sloped map to pygame screen and returns a numpy 2Darray that acts
@@ -78,10 +129,11 @@ def collide_terrain(rectangle, pixelMatrix):
 if __name__ == "__main__":
 
     pygame.init()
+    
 
     # Set up display window
-    DISPLAY_WIDTH =  20
-    DISPLAY_HEIGHT = 15
+    DISPLAY_WIDTH =  900
+    DISPLAY_HEIGHT = 600
     DISPLAYSURF = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
     # Color constants
@@ -91,7 +143,9 @@ if __name__ == "__main__":
 
     DISPLAYSURF.fill(SKYBLUE)
 
-    numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
+    #numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
+    numpyPixel = get_random_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+
 
     print(numpyPixel)
 
