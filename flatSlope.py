@@ -25,7 +25,7 @@ def get_random_pix_map(displayW, displayH):
     # ratio of points (hills) to pixels
     ratio_hills_pixels = 3.0/200.0
     #frequency = int(ratio_hills_pixels * float(displayW))
-    frequency = 5
+    frequency = 3
 
     noise = perlin.Perlin(frequency)
     x_vals = [x for x in range(displayW)]
@@ -46,9 +46,12 @@ def get_random_pix_map(displayW, displayH):
     y_vals_norm = [norm(i) for i in y_vals]
     for x in range(displayW):
         currentHeight = int(y_vals_norm[x] * displayH)
-        par[x,currentHeight:bottomOfWindow] = GREEN
+        with open("MyFile.txt","a") as file1:
+            print(f"Row {x} has a height of {currentHeight}", file=file1)
+
+        par[x,bottomOfWindow-currentHeight:bottomOfWindow] = GREEN
         # Set 1 values for pixel matrix
-        for index in range(displayH-1, currentHeight, -1):
+        for index in range(displayH-1, displayH-1- currentHeight, -1):
             pixelMatrix[index][x] = 1
     par.close()
     DISPLAYSURF.blit(surf, (0,0))
@@ -132,8 +135,8 @@ if __name__ == "__main__":
     
 
     # Set up display window
-    DISPLAY_WIDTH =  900
-    DISPLAY_HEIGHT = 600
+    DISPLAY_WIDTH =  45
+    DISPLAY_HEIGHT = 30
     DISPLAYSURF = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
     # Color constants
@@ -146,8 +149,17 @@ if __name__ == "__main__":
     #numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
     numpyPixel = get_random_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
-
+    # Makes it so full numpy array is displayed in terminal
+    # Be careful when using large resolutions
+    numpy.set_printoptions(threshold=sys.maxsize)
+    # Set linewidth to the size of a single line of numpy array (when printed)
+    numpy.set_printoptions(linewidth=140)
+    file1 = open("MyFile.txt","a")
+    print()
     print(numpyPixel)
+    file1.write(str(numpyPixel))
+    file1.close()
+
 
     # Main game loop.
     while True:
