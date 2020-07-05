@@ -1,7 +1,7 @@
 import os, sys
 import pygame
 import numpy
-import perlin
+from gameTools import perlin
 from pygame.locals import *
 
 def get_random_pix_map(displayW, displayH):
