@@ -4,7 +4,8 @@ import numpy
 from gameTools import perlin
 from pygame.locals import *
 
-def get_random_pix_map(displayW, displayH):
+
+def get_random_pix_map(displayW, displayH, maxHillHeight, freqOfHills=2):
 
     # Creation of 2d pixel matrix, will store 1's for ground, 0 for sky
     pixelMatrix = numpy.zeros((displayH, displayW))
@@ -24,31 +25,32 @@ def get_random_pix_map(displayW, displayH):
     # Randomly generate heights
     # ratio of points (hills) to pixels
     ratio_hills_pixels = 3.0/200.0
-    #frequency = int(ratio_hills_pixels * float(displayW))
+    # frequency represents frequency of hills 
     frequency = 3
 
+    # Get perlin randomly generated values
     noise = perlin.Perlin(frequency)
     x_vals = [x for x in range(displayW)]
     y_vals = [noise.valueAt(x) for x in x_vals]
 
+    # Normalization of random perlin values to 0-1 so we may then 
+    # multiply these normalized values by our max hill height to achieve smooth
+    # random hills
     old_max_y = max(y_vals)
     old_min_y = min(y_vals)
     old_range = old_max_y - old_min_y
-
     new_max_y = 1.0
     new_min_y = 0
     new_range = new_max_y - new_min_y
+    norm = lambda oldVal: (((oldVal - old_min_y) * new_range) / old_range) + new_min_y
+    y_vals_norm = [norm(i) for i in y_vals]
 
     GREEN = (0, 110, 0)
 
-    norm = lambda oldVal: (((oldVal - old_min_y) * new_range) / old_range) + new_min_y
-
-    y_vals_norm = [norm(i) for i in y_vals]
     for x in range(displayW):
-        currentHeight = int(y_vals_norm[x] * displayH)
-        with open("MyFile.txt","a") as file1:
-            print(f"Row {x} has a height of {currentHeight}", file=file1)
-
+        currentHeight = int(y_vals_norm[x] * maxHillHeight)
+        # with open("MyFile.txt","a") as file1:
+        #     print(f"Row {x} has a height of {currentHeight}", file=file1)
         par[x,bottomOfWindow-currentHeight:bottomOfWindow] = GREEN
         # Set 1 values for pixel matrix
         for index in range(displayH-1, displayH-1- currentHeight, -1):
@@ -94,9 +96,9 @@ def get_slope_pix_map(displayW, displayH, stepSize, minH, maxH, color, direction
         # Declare variables to be used within loop
         currentHeight = displayH - minH
         # Run loop to fill pixel array
-        print("my currentHeight: ", currentHeight)
-        print("my stepSize: ", stepSize)
-        print("my maxH: ", maxH)
+        # print("my currentHeight: ", currentHeight)
+        # print("my stepSize: ", stepSize)
+        # print("my maxH: ", maxH)
         for x in range(displayW):
             # Set Color of PixelArray
             par[x,currentHeight:bottomOfWindow] = color
@@ -122,7 +124,8 @@ def get_slope_pix_map(displayW, displayH, stepSize, minH, maxH, color, direction
     DISPLAYSURF.blit(surf, (0,0))
     return pixelMatrix
 
-def collide_terrain(rectangle, pixelMatrix):
+def collision_circle(x_cord, y_cord, radius):
+    # Need to calculate pixel values of circle, possibly with trig?
     top = rectangle.top
     right = rectangle.right
     bottom = rectangle.bottom
@@ -132,11 +135,10 @@ def collide_terrain(rectangle, pixelMatrix):
 if __name__ == "__main__":
 
     pygame.init()
-    
 
     # Set up display window
-    DISPLAY_WIDTH =  45
-    DISPLAY_HEIGHT = 30
+    DISPLAY_WIDTH =  900
+    DISPLAY_HEIGHT = 600
     DISPLAYSURF = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
     # Color constants
@@ -147,19 +149,19 @@ if __name__ == "__main__":
     DISPLAYSURF.fill(SKYBLUE)
 
     #numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
-    numpyPixel = get_random_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    numpyPixel = get_random_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
+    pygame.draw.circle(DISPLAYSURF, WHITE, [80, 80], 80, 0)
 
     # Makes it so full numpy array is displayed in terminal
     # Be careful when using large resolutions
-    numpy.set_printoptions(threshold=sys.maxsize)
-    # Set linewidth to the size of a single line of numpy array (when printed)
-    numpy.set_printoptions(linewidth=140)
-    file1 = open("MyFile.txt","a")
-    print()
-    print(numpyPixel)
-    file1.write(str(numpyPixel))
-    file1.close()
-
+    # numpy.set_printoptions(threshold=sys.maxsize)
+    # # Set linewidth to the size of a single line of numpy array (when printed)
+    # numpy.set_printoptions(linewidth=140)
+    # file1 = open("MyFile.txt","a")
+    # print()
+    # print(numpyPixel)
+    # file1.write(str(numpyPixel))
+    # file1.close()
 
     # Main game loop.
     while True:

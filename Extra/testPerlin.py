@@ -3,7 +3,7 @@ import random
 import matplotlib.pyplot as plt
 
 def show_perlin_noise():
-    noise=perlin.Perlin(10)
+    noise=perlin.Perlin(2)
 
     x_vals = [x for x in range(900)]
     y_vals = [noise.valueAt(x) for x in x_vals]
@@ -33,13 +33,13 @@ def show_perlin_noise():
     # plt.title("Perlin Noise")
     # plt.xlabel("Time")
     # plt.ylabel("Value")
-    # plt.plot(time, y_vals)
+    # plt.plot(x_vals, y_vals)
     # plt.show()
 
     plt.title("Perlin Noise")
     plt.xlabel("Time")
     plt.ylabel("Value")
-    plt.plot(time, y_vals_norm)
+    plt.plot(x_vals, y_vals_norm)
     plt.show()
 
 if __name__ == '__main__':

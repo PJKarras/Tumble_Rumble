@@ -1,5 +1,6 @@
 """ MODULE BORROWED 
-https://github.com/Supreme-Sector/Python-Perlin-Noise """
+https://github.com/Supreme-Sector/Python-Perlin-Noise 
+With some minor changes made"""
 
 import random
 
@@ -15,7 +16,7 @@ class Perlin:
         self.gradients = []
         self.frequency = frequency
         self.lowerBound = 0
-        self.interval_size = 100 / (self.frequency-1)
+        self.interval_size = 200 / (self.frequency-1)
         self.gradients = [random.uniform(-1, 1) for i in range(frequency)]
 
     """ Bulk of the algorithm"""
