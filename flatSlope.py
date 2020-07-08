@@ -56,8 +56,8 @@ def get_random_pix_map(displayW, displayH, maxHillHeight, freqOfHills=2):
         for index in range(displayH-1, displayH-1- currentHeight, -1):
             pixelMatrix[index][x] = 1
     par.close()
-    DISPLAYSURF.blit(surf, (0,0))
-    return pixelMatrix
+    #DISPLAYSURF.blit(surf, (0,0))
+    return pixelMatrix, surf
 
 def get_slope_pix_map(displayW, displayH, stepSize, minH, maxH, color, direction):
     """ Draws a sloped map to pygame screen and returns a numpy 2Darray that acts
@@ -149,7 +149,10 @@ if __name__ == "__main__":
     DISPLAYSURF.fill(SKYBLUE)
 
     #numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
-    numpyPixel = get_random_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
+    numpyPixel, surf = get_random_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
+
+    DISPLAYSURF.blit(surf, (0,0))
+
     pygame.draw.circle(DISPLAYSURF, WHITE, [80, 80], 80, 0)
 
     # Makes it so full numpy array is displayed in terminal
