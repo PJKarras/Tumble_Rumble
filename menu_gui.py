@@ -2,6 +2,7 @@ import pygame
 import pygame.freetype
 from pygame.sprite import Sprite
 from pygame.rect import Rect
+import game_ui
 
 BLUE = (106, 150, 181)
 WHITE = (255, 255, 255)
@@ -121,7 +122,7 @@ def startMenu(screen):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if startButton.rect.collidepoint(pos):
-                    done = True
+                    startGame(screen)
                 if returnButton.rect.collidepoint(pos):
                     done = True
 
@@ -133,6 +134,10 @@ def startMenu(screen):
         returnButton.update(pygame.mouse.get_pos())
         returnButton.draw(screen)
         pygame.display.flip()
+
+
+def startGame(screen):
+    game_ui.start(screen)
 
 
 def main():
