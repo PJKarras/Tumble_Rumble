@@ -8,7 +8,7 @@ GRAY = (128, 128, 128)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 gui_block = Rect(0, 470, 800, 130)
-#weapons = pygame.image.load("weapon.png").
+#weapons = pygame.image.load("weapon.png")
 
 
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
