@@ -1,27 +1,83 @@
 import os, sys
 import pygame
 import numpy
+from gameTools import perlin
 from pygame.locals import *
+
+
+def get_random_pix_map(DISPLAYSURF, displayW, displayH, maxHillHeight, freqOfHills=2):
+    # Creation of 2d pixel matrix, will store 1's for ground, 0 for sky
+    pixelMatrix = numpy.zeros((displayH, displayW))
+
+    # Declare surface for terrain (used to draw terrain on window)
+    surf = pygame.Surface((displayW, displayH))
+    surf = surf.convert_alpha()
+    transperantFill = (0, 0, 255, 0)
+    surf.fill(transperantFill)
+
+    # Declare pixel array, to be used to tell pygame where to fill with color
+    par = pygame.PixelArray(surf)
+
+    # Pixel  representation of the bottom of window (addresses start at 0)
+    bottomOfWindow = displayH
+
+    # Randomly generate heights
+    # ratio of points (hills) to pixels
+    ratio_hills_pixels = 3.0 / 200.0
+    # frequency represents frequency of hills
+    frequency = 3
+
+    # Get perlin randomly generated values
+    noise = perlin.Perlin(frequency)
+    x_vals = [x for x in range(displayW)]
+    y_vals = [noise.valueAt(x) for x in x_vals]
+
+    # Normalization of random perlin values to 0-1 so we may then
+    # multiply these normalized values by our max hill height to achieve smooth
+    # random hills
+    old_max_y = max(y_vals)
+    old_min_y = min(y_vals)
+    old_range = old_max_y - old_min_y
+    new_max_y = 1.0
+    new_min_y = 0
+    new_range = new_max_y - new_min_y
+    norm = lambda oldVal: (((oldVal - old_min_y) * new_range) / old_range) + new_min_y
+    y_vals_norm = [norm(i) for i in y_vals]
+
+    GREEN = (0, 110, 0)
+
+    for x in range(displayW):
+        currentHeight = int(y_vals_norm[x] * maxHillHeight)
+        # with open("MyFile.txt","a") as file1:
+        #     print(f"Row {x} has a height of {currentHeight}", file=file1)
+        par[x, bottomOfWindow - currentHeight:bottomOfWindow] = GREEN
+        # Set 1 values for pixel matrix
+        for index in range(displayH - 1, displayH - 1 - currentHeight, -1):
+            pixelMatrix[index][x] = 1
+    par.close()
+    #DISPLAYSURF.blit(surf, (0, 0))
+    return pixelMatrix, surf
+
 
 def get_slope_pix_map(displayW, displayH, stepSize, minH, maxH, color, direction):
     """ Draws a sloped map to pygame screen and returns a numpy 2Darray that acts
-    as a pixel map for collision detection where 0's represent air, and 1's 
-    represent ground. This matrix directly corresponds to the drawn terrain on 
+    as a pixel map for collision detection where 0's represent air, and 1's
+    represent ground. This matrix directly corresponds to the drawn terrain on
     screen.
     displayW: The variable representing display width i.e. 1920 in 1920x1080
     displayH: The variable representing display height i.e. 1080 in 1920x1080
-    stepSize: How many pixels each column of terrain changes by 
+    stepSize: How many pixels each column of terrain changes by
     minH: The minimum height of terrain (little buggy)
     maxH: The max height of terrain
     color: The color of drawn terrain
-    direction: "/", "up", or "r" for upwards slope, "\\", "down", or "l" for down  
+    direction: "/", "up", or "r" for upwards slope, "\\", "down", or "l" for down
     """
 
     # Creation of 2d pixel matrix, will store 1's for ground, 0 for sky
     pixelMatrix = numpy.zeros((displayH, displayW))
 
     # Declare surface for terrain (used to draw terrain on window)
-    surf = pygame.Surface((displayW,displayH))
+    surf = pygame.Surface((displayW, displayH))
     surf = surf.convert_alpha()
     transperantFill = (0, 0, 255, 0)
     surf.fill(transperantFill)
@@ -33,22 +89,22 @@ def get_slope_pix_map(displayW, displayH, stepSize, minH, maxH, color, direction
     bottomOfWindow = displayH
 
     # currentHeight here actually represents the raw y coordinate of the height,
-    # so while currentHeight might be equal to 490, it acutally represents a 
-    # height of 10, will fix in future, this is also the reason beside the 
+    # so while currentHeight might be equal to 490, it acutally represents a
+    # height of 10, will fix in future, this is also the reason beside the
     # seemingly weird step behavior
     if direction == "/" or direction == "up" or direction == "r":
         # Declare variables to be used within loop
         currentHeight = displayH - minH
         # Run loop to fill pixel array
-        print("my currentHeight: ", currentHeight)
-        print("my stepSize: ", stepSize)
-        print("my maxH: ", maxH)
+        # print("my currentHeight: ", currentHeight)
+        # print("my stepSize: ", stepSize)
+        # print("my maxH: ", maxH)
         for x in range(displayW):
             # Set Color of PixelArray
-            par[x,currentHeight:bottomOfWindow] = color
+            par[x, currentHeight:bottomOfWindow] = color
             # Set 1 values for pixel matrix
-            for index in range(displayH-1, currentHeight, -1):
-                 pixelMatrix[index][x] = 1
+            for index in range(displayH - 1, currentHeight, -1):
+                pixelMatrix[index][x] = 1
             if displayH - (currentHeight + stepSize) <= maxH:
                 currentHeight -= stepSize
     elif direction == "\\" or direction == "down" or direction == "l":
@@ -57,31 +113,34 @@ def get_slope_pix_map(displayW, displayH, stepSize, minH, maxH, color, direction
         # Run loop to fill pixel array
         for x in range(displayW):
             # Set Color of PixelArray
-            par[x,currentHeight:bottomOfWindow] = color
+            par[x, currentHeight:bottomOfWindow] = color
             # Set 1 values for pixel matrix
-            for index in range(displayH-1, currentHeight, -1):
-                 pixelMatrix[index][x] = 1
+            for index in range(displayH - 1, currentHeight, -1):
+                pixelMatrix[index][x] = 1
             if displayH - (currentHeight - stepSize) > minH:
                 currentHeight += stepSize
     # Close and locks PixelArray and then draws it to screen
     par.close()
-    DISPLAYSURF.blit(surf, (0,0))
+    DISPLAYSURF.blit(surf, (0, 0))
     return pixelMatrix
 
-def collide_terrain(rectangle, pixelMatrix):
+
+def collision_circle(x_cord, y_cord, radius):
+    # Need to calculate pixel values of circle, possibly with trig?
     top = rectangle.top
     right = rectangle.right
     bottom = rectangle.bottom
     left = rectangle.left
     # Code here to check pixel matrix with above values for a collison
 
+
 if __name__ == "__main__":
 
     pygame.init()
 
     # Set up display window
-    DISPLAY_WIDTH =  20
-    DISPLAY_HEIGHT = 15
+    DISPLAY_WIDTH = 900
+    DISPLAY_HEIGHT = 600
     DISPLAYSURF = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
     # Color constants
@@ -91,9 +150,20 @@ if __name__ == "__main__":
 
     DISPLAYSURF.fill(SKYBLUE)
 
-    numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
+    # numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
+    numpyPixel = get_random_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
+    pygame.draw.circle(DISPLAYSURF, WHITE, [80, 80], 80, 0)
 
-    print(numpyPixel)
+    # Makes it so full numpy array is displayed in terminal
+    # Be careful when using large resolutions
+    # numpy.set_printoptions(threshold=sys.maxsize)
+    # # Set linewidth to the size of a single line of numpy array (when printed)
+    # numpy.set_printoptions(linewidth=140)
+    # file1 = open("MyFile.txt","a")
+    # print()
+    # print(numpyPixel)
+    # file1.write(str(numpyPixel))
+    # file1.close()
 
     # Main game loop.
     while True:
@@ -102,5 +172,3 @@ if __name__ == "__main__":
                 pygame.quit()
                 sys.exit()
             pygame.display.update()
-
-
