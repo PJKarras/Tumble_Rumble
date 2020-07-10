@@ -3,19 +3,30 @@ import pygame.freetype
 from pygame.sprite import Sprite
 from pygame.rect import Rect
 
+display_height = 720
+display_width = 1280
 
 GRAY = (128, 128, 128)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 gui_block = Rect(0, 525, 800, 75)
-weapons = pygame.transform.scale(pygame.image.load("assets/Weapons.png"), (240, 80))
-weapons_glow = pygame.transform.scale(pygame.image.load("assets/Weapons_glow.png"), (256, 80))
-fire = pygame.transform.scale(pygame.image.load("assets/fire.png"), (240, 70))
-fire_hover = pygame.transform.scale(pygame.image.load("assets/fire_hover.png"), (240, 70))
-items = pygame.transform.scale(pygame.image.load("assets/items.png"), (150, 80))
-items_glow = pygame.transform.scale(pygame.image.load("assets/items_glow.png"), (150, 80))
-leave = pygame.transform.scale(pygame.image.load("assets/leave.png"), (180, 60))
-leave_glow = pygame.transform.scale(pygame.image.load("assets/leave_glow.png"), (180, 60))
+weapons = pygame.image.load("assets/Weapons.png")
+weapons_glow = pygame.image.load("assets/Weapons_glow.png")
+fire = pygame.image.load("assets/fire.png")
+fire_hover = pygame.image.load("assets/fire_hover.png")
+items = pygame.image.load("assets/items.png")
+items_glow = pygame.image.load("assets/items_glow.png")
+leave = pygame.image.load("assets/leave.png")
+leave_glow = pygame.image.load("assets/leave_glow.png")
+missile = pygame.transform.scale(pygame.image.load("assets/missile.png"), (180, 60))
+missileX2 = pygame.transform.scale(pygame.image.load("assets/missileX2.png"), (180, 60))
+missileX3 = pygame.transform.scale(pygame.image.load("assets/missileX3.png"), (180, 60))
+atomic = pygame.transform.scale(pygame.image.load("assets/atomic.png"), (180, 60))
+weapon_item_holder = pygame.image.load("assets/weapon_item_holder.png")
+wrench = pygame.transform.scale(pygame.image.load("assets/wrench.png"), (180, 60))
+jetpack = pygame.transform.scale(pygame.image.load("assets/jetpack.png"), (180, 60))
+move_on = pygame.image.load("assets/move_on.png")
+move_off = pygame.image.load("assets/move_off.png")
 
 
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
@@ -90,43 +101,86 @@ class UIElement(Sprite):
         surface.blit(self.image, self.rect)
 
 
+weapon_button = GuiElement(
+    center_position=(display_width*.40, display_height*.03),
+    image=weapons,
+    image_glow=weapons_glow
+)
+
+fire_button = GuiElement(
+    center_position=(display_width*.875, display_height*.05),
+    image=fire,
+    image_glow=fire_hover
+)
+
+leave_button = GuiElement(
+    center_position=(display_width*.056, display_height*.03),
+    image=leave,
+    image_glow=leave_glow
+)
+
+items_button = GuiElement(
+    center_position=(display_width*.55, display_height*.03),
+    image=items,
+    image_glow=items_glow
+)
+
+weapons_holder = GuiElement(
+    center_position=(display_width * .40, (display_height * .03)+90),
+    image=weapon_item_holder,
+    image_glow=weapon_item_holder
+)
+
+items_holder = GuiElement(
+    center_position=(display_width * .55, (display_height * .03) + 90),
+    image=weapon_item_holder,
+    image_glow=weapon_item_holder
+)
+
+move_on_button = GuiElement(
+    center_position=(display_width*.15, display_height*.03),
+    image=move_on,
+    image_glow=move_on
+)
+
+move_off_button = GuiElement(
+    center_position=(display_width * .15, display_height * .03),
+    image=move_off,
+    image_glow=move_off
+)
+
+button_list = [weapon_button, fire_button, leave_button, items_button]
+
+
 def start(screen):
-    weapon_button = GuiElement(
-        center_position=(115, 565),
-        image=weapons,
-        image_glow=weapons_glow
-    )
 
-    fire_button = GuiElement(
-        center_position=(500, 565),
-        image=fire,
-        image_glow=fire_hover
-    )
-
-    leave_button = GuiElement(
-        center_position=(710, 570),
-        image=leave,
-        image_glow=leave_glow
-    )
-
-    items_button = GuiElement(
-        center_position=(305, 570),
-        image=items,
-        image_glow=items_glow
-    )
-
-    button_list = [weapon_button, fire_button, leave_button, items_button]
-
+    weapon_menu_open = False
+    item_menu_open = False
     done = False
     while not done:
         screen.fill(BLACK)
-        pygame.draw.rect(screen, GRAY, gui_block)
+        if weapon_menu_open:
+            weapons_holder.draw(screen)
+        if item_menu_open:
+            items_holder.draw(screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
+                if leave_button.rect.collidepoint(pos):
+                    return
+                if weapon_button.rect.collidepoint(pos):
+                    if weapon_menu_open:
+                        weapon_menu_open = False
+                    else:
+                        weapon_menu_open = True
+                if items_button.rect.collidepoint(pos):
+                    if item_menu_open:
+                        item_menu_open = False
+                    else:
+                        item_menu_open = True
 
 
         #item_button.update(pygame.mouse.get_pos())
