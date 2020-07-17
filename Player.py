@@ -36,10 +36,20 @@ class Player:
             self.xpos_cannon = self.xpos - int(0.25 * self.spr_player_left.get_width())
             self.ypos_cannon = self.ypos
 
+        # create hit-box
+        self.hitbox = (self.xpos + 1, self.ypos + 1, self.spr_player.get_width(), self.spr_player.get_height()+20)
+
+        # create health bar
+        self.health = 13
+        self.visible = True
+
+        # create fuel bar
+        self.fuelAmount = 50
+        self.canMove = True
+
         # normalize the spawn
 
     # end of constructor
-
     def setSpawn(self):
         self.xpos = (self.playerNum * 0.20) * self.screen.get_width()
         ypos = 0
@@ -93,6 +103,11 @@ class Player:
                         self.ypos_cannon = self.ypos
                         # update the screen
                         self._Update()
+                elif event_key == pygame.K_h:
+                    #print("Hit")
+                    self.hit()
+                    self._Update()
+
 
     # end of Change_Pos
 
@@ -119,11 +134,35 @@ class Player:
             self.ypos += 1
             self.true_ypos += 1
 
+    # if player is hit, call this function
+    def hit(self):
+        if self.health > 0:
+            self.health -= 1
+        else:
+            self.visible = False
+
+
+    # decreases fuel
+    def decreaseFuel(self):
+        if self.fuelAmount > 0:
+            self.fuelAmount -= 1
+        else:
+            self.canMove = False
+
 
     # blit's the player object to screen, updating its position
     def _Update(self):
         self.screen.blit(self.spr_cannon, (self.xpos_cannon, self.ypos_cannon))
         self.screen.blit(self.spr_player, (self.xpos, self.ypos))
+        self.hitbox = (self.xpos, self.ypos + 20, self.spr_player.get_width(), self.spr_player.get_height()-20)
+
+        # for testing hitbox
+        # draws hitbox around player
+        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+
+        # draws health bar over player
+        pygame.draw.rect(self.screen, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 20, 65, 10))
+        pygame.draw.rect(self.screen, (102,255,102), (self.hitbox[0], self.hitbox[1] - 20, 65 - (5 * (13 - self.health)), 10))
 
     # end of _Update
 
