@@ -1,13 +1,12 @@
-import numpy
+import numpy as np
+
 
 if __name__ == "__main__":
     displayH = 10
     displayW = 10
 
-    pixelMatrix = numpy.zeros((displayH, displayW))
-
-    currentHeight = 3
-    pixelMatrix[0][0] = 5
-    for index in range(displayH-1, displayH-currentHeight-1, -1):
-            pixelMatrix[index][0] = 1
-    print(pixelMatrix)
+    mine = np.zeros((4,4))
+    print("Before change of mine[0,1]:\n", mine)
+    mine[0,1] = 1
+    print("After change of mine[0,1]:\n", mine)
+    print("Access of mine[0,1]:", mine[0,1])

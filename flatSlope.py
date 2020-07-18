@@ -4,6 +4,10 @@ import numpy
 from gameTools import perlin
 from pygame.locals import *
 
+# Color constants
+WHITE = (250, 250, 250)
+GREEN = (0, 110, 0)
+SKYBLUE = (100, 190, 255)
 
 def get_random_pix_map(DISPLAYSURF, displayW, displayH, maxHillHeight, freqOfHills=2):
     # Creation of 2d pixel matrix, will store 1's for ground, 0 for sky
@@ -12,7 +16,7 @@ def get_random_pix_map(DISPLAYSURF, displayW, displayH, maxHillHeight, freqOfHil
     # Declare surface for terrain (used to draw terrain on window)
     surf = pygame.Surface((displayW, displayH))
     surf = surf.convert_alpha()
-    transperantFill = (0, 0, 255, 0)
+    transperantFill = (100, 190, 255, 0)
     surf.fill(transperantFill)
 
     # Declare pixel array, to be used to tell pygame where to fill with color
@@ -133,6 +137,33 @@ def collision_circle(x_cord, y_cord, radius):
     left = rectangle.left
     # Code here to check pixel matrix with above values for a collison
 
+# Center_impact is the coordinate of the collision, tuple of format (x,y)
+# Round_type is the type of projectile that made the collision as a string
+# Terrain_array is the pixelArray for the terrain (as gotten with
+# pygame.surfarray.array3d)
+# Collision_array is numpy array that represents 1s and 0s for collision
+def destroy_terrain(center_impact, round_type, terrain_array, collision_array):
+    remove_coord_increments = tuple()
+    x_rem = center_impact[0]
+    y_rem = center_impact[1]
+    # Pick remove array, removes left to right, top to bottom
+    if round_type == "normal":
+        remove_coord_increments = [(-1,3),(1,0),(1,0),
+                                   (-3,-1),(1,0),(1,0),(1,0),(1,0),
+                                   (-5,-1),(1,0),(1,0),(1,0),(1,0),(1,0),(1,0),
+                                   (-6,-1),(1,0),(1,0),(1,0),(1,0),(1,0),(1,0),
+                                   (-6,-1),(1,0),(1,0),(1,0),(1,0),(1,0),(1,0),
+                                   (-5,-1),(1,0),(1,0),(1,0),(1,0),
+                                   (-3,-1),(1,0),(1,0)]
+
+    for x,y in remove_coord_increments:
+        x_rem = x + x_rem
+        y_rem = y + y_rem
+        terrain_array[x_rem, y_rem] = WHITE
+        collision_array[x_rem, y_rem] = 0
+    return terrain_array, collision_array
+
+    # SEEMS AS THOUGH array access is working incorrectly
 
 if __name__ == "__main__":
 
@@ -143,16 +174,26 @@ if __name__ == "__main__":
     DISPLAY_HEIGHT = 600
     DISPLAYSURF = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
-    # Color constants
-    WHITE = (250, 250, 250)
-    GREEN = (0, 110, 0)
-    SKYBLUE = (100, 190, 255)
+    
 
     DISPLAYSURF.fill(SKYBLUE)
 
     # numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
-    numpyPixel = get_random_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
+    numpyPixel, surf = get_random_pix_map(DISPLAYSURF,DISPLAY_WIDTH, DISPLAY_HEIGHT, 500)
+
     pygame.draw.circle(DISPLAYSURF, WHITE, [80, 80], 80, 0)
+
+    screenPixelArray = pygame.surfarray.array3d(surf)
+    screenPixelArray, numpyPixel = destroy_terrain((500,500), "normal", screenPixelArray, numpyPixel)
+    # print(screenPixelArray[599,20])
+    # if screenPixelArray[10,10][1] == SKYBLUE[1]:
+    #     screenPixelArray[10:20,10:20] = GREEN
+    # print(numpyPixel[20,599])
+    numpy.set_printoptions(linewidth=94)
+    print(numpyPixel[480:510, 85:115])
+
+
+
 
     # Makes it so full numpy array is displayed in terminal
     # Be careful when using large resolutions
@@ -171,4 +212,6 @@ if __name__ == "__main__":
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+            #DISPLAYSURF.blit(surf, (0,0))
+            pygame.surfarray.blit_array(DISPLAYSURF,screenPixelArray)
             pygame.display.update()
