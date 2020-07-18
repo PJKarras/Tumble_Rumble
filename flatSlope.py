@@ -159,7 +159,7 @@ def destroy_terrain(center_impact, round_type, terrain_array, collision_array):
     for x,y in remove_coord_increments:
         x_rem = x + x_rem
         y_rem = y + y_rem
-        terrain_array[x_rem, y_rem] = WHITE
+        terrain_array[x_rem, y_rem] = SKYBLUE
         collision_array[x_rem, y_rem] = 0
     return terrain_array, collision_array
 
@@ -170,8 +170,8 @@ if __name__ == "__main__":
     pygame.init()
 
     # Set up display window
-    DISPLAY_WIDTH = 900
-    DISPLAY_HEIGHT = 600
+    DISPLAY_WIDTH = 55
+    DISPLAY_HEIGHT = 45
     DISPLAYSURF = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
     
@@ -179,18 +179,19 @@ if __name__ == "__main__":
     DISPLAYSURF.fill(SKYBLUE)
 
     # numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
-    numpyPixel, surf = get_random_pix_map(DISPLAYSURF,DISPLAY_WIDTH, DISPLAY_HEIGHT, 500)
+    numpyPixel, surf = get_random_pix_map(DISPLAYSURF,DISPLAY_WIDTH, DISPLAY_HEIGHT, 40)
 
     pygame.draw.circle(DISPLAYSURF, WHITE, [80, 80], 80, 0)
 
     screenPixelArray = pygame.surfarray.array3d(surf)
-    screenPixelArray, numpyPixel = destroy_terrain((500,500), "normal", screenPixelArray, numpyPixel)
+    screenPixelArray, numpyPixel = destroy_terrain((30,35), "normal", screenPixelArray, numpyPixel)
     # print(screenPixelArray[599,20])
     # if screenPixelArray[10,10][1] == SKYBLUE[1]:
     #     screenPixelArray[10:20,10:20] = GREEN
     # print(numpyPixel[20,599])
-    numpy.set_printoptions(linewidth=94)
-    print(numpyPixel[480:510, 85:115])
+    numpy.set_printoptions(threshold=sys.maxsize)
+    numpy.set_printoptions(linewidth=170)
+    print(numpyPixel)
 
 
 
