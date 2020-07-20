@@ -53,7 +53,9 @@ spawnPos = ((xMax * 0.6), (yMax * 0.7))
 
 # start game
 def start(screen):
-    numpyPixel, surf = get_random_pix_map(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
+    # Old terrain init
+    #numpyPixel, surf = get_random_pix_map(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
+    numpyPixel, colorNumpyArray = get_random_pix_map(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
     pygame.draw.circle(screen, WHITE, [80, 80], 80, 0)
 
     # initialize test player and helping attributes
@@ -119,5 +121,9 @@ def start(screen):
             i.update(pygame.mouse.get_pos())
             i.draw(screen)
         pygame.display.update()
-        screen.fill(SKYBLUE)
-        screen.blit(surf, (0, 0))
+
+        # Old blit
+        #screen.fill(SKYBLUE)
+        #screen.blit(surf, (0, 0))
+        terrainSurface = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+        pygame.surfarray.blit_array(terrainSurface, colorNumpyArray)

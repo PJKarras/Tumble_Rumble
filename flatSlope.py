@@ -1,6 +1,7 @@
 import os, sys
 import pygame
 import numpy
+import math
 from gameTools import perlin
 from pygame.locals import *
 
@@ -11,7 +12,7 @@ SKYBLUE = (100, 190, 255)
 
 def get_random_pix_map(DISPLAYSURF, displayW, displayH, maxHillHeight, freqOfHills=2):
     # Creation of 2d pixel matrix, will store 1's for ground, 0 for sky
-    pixelMatrix = numpy.zeros((displayH, displayW))
+    collisionNumpyArray = numpy.zeros((displayH, displayW))
 
     # Declare surface for terrain (used to draw terrain on window)
     surf = pygame.Surface((displayW, displayH))
@@ -57,10 +58,11 @@ def get_random_pix_map(DISPLAYSURF, displayW, displayH, maxHillHeight, freqOfHil
         par[x, bottomOfWindow - currentHeight:bottomOfWindow] = GREEN
         # Set 1 values for pixel matrix
         for index in range(displayH - 1, displayH - 1 - currentHeight, -1):
-            pixelMatrix[index][x] = 1
+            collisionNumpyArray[index][x] = 1
     par.close()
     #DISPLAYSURF.blit(surf, (0, 0))
-    return pixelMatrix, surf
+    colorNumpyArray = pygame.surfarray.array3d(surf)
+    return collisionNumpyArray, colorNumpyArray
 
 
 def get_slope_pix_map(displayW, displayH, stepSize, minH, maxH, color, direction):
@@ -137,65 +139,64 @@ def collision_circle(x_cord, y_cord, radius):
     left = rectangle.left
     # Code here to check pixel matrix with above values for a collison
 
-# Center_impact is the coordinate of the collision, tuple of format (x,y)
-# Round_type is the type of projectile that made the collision as a string
-# Terrain_array is the pixelArray for the terrain (as gotten with
-# pygame.surfarray.array3d)
-# Collision_array is numpy array that represents 1s and 0s for collision
-def destroy_terrain(center_impact, round_type, terrain_array, collision_array):
-    remove_coord_increments = tuple()
+# Takes in location and size of impact, and modifies pasted in arrays for the 
+# terrain color and collision to display the affects of that round/projectile.
+#   RETURNS: terrain_array, collision_array back in updated form 
+#   Center_impact: the coordinate of the collision, tuple of format (x,y)
+#   Round_size: the area of explosion area in pixels
+#   Terrain_array: the color numpy array for the terrain (as gotten with
+#   pygame.surfarray.array3d)
+#   Collision_array: numpy array that represents 1s and 0s for collision
+def destroy_terrain_circle(center_impact, round_size, collision_array, terrain_array):
     x_rem = center_impact[0]
     y_rem = center_impact[1]
-    # Pick remove array, removes left to right, top to bottom
-    if round_type == "normal":
-        remove_coord_increments = [(-1,3),(1,0),(1,0),
-                                   (-3,-1),(1,0),(1,0),(1,0),(1,0),
-                                   (-5,-1),(1,0),(1,0),(1,0),(1,0),(1,0),(1,0),
-                                   (-6,-1),(1,0),(1,0),(1,0),(1,0),(1,0),(1,0),
-                                   (-6,-1),(1,0),(1,0),(1,0),(1,0),(1,0),(1,0),
-                                   (-5,-1),(1,0),(1,0),(1,0),(1,0),
-                                   (-3,-1),(1,0),(1,0)]
-
-    for x,y in remove_coord_increments:
-        x_rem = x + x_rem
-        y_rem = y + y_rem
-        terrain_array[x_rem, y_rem] = SKYBLUE
-        collision_array[x_rem, y_rem] = 0
-    return terrain_array, collision_array
-
-    # SEEMS AS THOUGH array access is working incorrectly
+    r = math.ceil( (float(round_size)/math.pi) ** 0.5)
+    diameter = r*2
+    for row in range(0, diameter+1):
+        for col in range(0, diameter+1):
+            circle_func_res = (col-r)**2 + (row-r)**2
+            if circle_func_res <= r**2:
+                terrain_array[x_rem+row, y_rem+col] = SKYBLUE
+                collision_array[y_rem+col, x_rem+row] = 0
+    return collision_array, terrain_array
 
 if __name__ == "__main__":
 
     pygame.init()
 
     # Set up display window
-    DISPLAY_WIDTH = 55
-    DISPLAY_HEIGHT = 45
+    DISPLAY_WIDTH = 500
+    DISPLAY_HEIGHT = 400
     DISPLAYSURF = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
-
-    
 
     DISPLAYSURF.fill(SKYBLUE)
 
-    # numpyPixel = get_slope_pix_map(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1, 3, 10, GREEN, "\\")
-    numpyPixel, surf = get_random_pix_map(DISPLAYSURF,DISPLAY_WIDTH, DISPLAY_HEIGHT, 40)
+    # First, get random pixel map
+    collisionNumpyArray, colorNumpyArray = get_random_pix_map(DISPLAYSURF,DISPLAY_WIDTH, DISPLAY_HEIGHT, 300)
+    
+    # Secondly, simulate an impact from a tank round (due to random generation of
+    # terrain and nature of this hard code the impact might not be apparent)
+    collisionNumpyArray, colorNumpyArray = destroy_terrain_circle((10,300), 200, collisionNumpyArray, colorNumpyArray)
 
-    pygame.draw.circle(DISPLAYSURF, WHITE, [80, 80], 80, 0)
+    # Main game loop.
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            #DISPLAYSURF.blit(surf, (0,0))
+            # NEW BLIT METHOD
+            pygame.surfarray.blit_array(DISPLAYSURF, colorNumpyArray)
+            pygame.display.update()
 
-    screenPixelArray = pygame.surfarray.array3d(surf)
-    screenPixelArray, numpyPixel = destroy_terrain((30,35), "normal", screenPixelArray, numpyPixel)
+
     # print(screenPixelArray[599,20])
     # if screenPixelArray[10,10][1] == SKYBLUE[1]:
     #     screenPixelArray[10:20,10:20] = GREEN
     # print(numpyPixel[20,599])
-    numpy.set_printoptions(threshold=sys.maxsize)
-    numpy.set_printoptions(linewidth=170)
-    print(numpyPixel)
-
-
-
-
+    #numpy.set_printoptions(threshold=sys.maxsize)
+    #numpy.set_printoptions(linewidth=200)
+    #print(numpyPixel)
     # Makes it so full numpy array is displayed in terminal
     # Be careful when using large resolutions
     # numpy.set_printoptions(threshold=sys.maxsize)
@@ -206,13 +207,3 @@ if __name__ == "__main__":
     # print(numpyPixel)
     # file1.write(str(numpyPixel))
     # file1.close()
-
-    # Main game loop.
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            #DISPLAYSURF.blit(surf, (0,0))
-            pygame.surfarray.blit_array(DISPLAYSURF,screenPixelArray)
-            pygame.display.update()
