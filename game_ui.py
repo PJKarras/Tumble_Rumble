@@ -36,6 +36,9 @@ shield = pygame.image.load("assets/shield.png")
 shield_glow = pygame.image.load("assets/shield_glow.png")
 move_on = pygame.image.load("assets/move_on.png")
 move_off = pygame.image.load("assets/move_off.png")
+right_arrow = pygame.image.load('arrow.png')
+right_arrow = pygame.transform.scale(right_arrow, (100, 80))
+left_arrow = pygame.transform.flip(right_arrow, True, False)
 
 
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
@@ -198,6 +201,18 @@ jetpack_icon = GuiElement(
     center_position=(display_width * .515, (display_height * .03)+120),
     image=jetpack,
     image_glow=jetpack_glow
+)
+
+left_arrow_button = GuiElement(
+    center_position=(display_width * .40, display_height * .33),
+    image=left_arrow,
+    image_glow=left_arrow
+)
+
+right_arrow_button = GuiElement(
+    center_position=(display_width * .60, display_height * .33),
+    image=right_arrow,
+    image_glow=right_arrow
 )
 
 

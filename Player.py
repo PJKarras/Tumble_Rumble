@@ -1,5 +1,8 @@
 import pygame
 
+DISPLAY_WIDTH = 1280
+DISPLAY_HEIGHT = 720
+
 class Player:
 
     def __init__(self, spr_player, spr_cannon, playerNum, screen, pixelMatrix):
@@ -44,7 +47,7 @@ class Player:
         self.visible = True
 
         # create fuel bar
-        self.fuelAmount = 50
+        self.fuelAmount = 7.2
         self.canMove = True
 
         # normalize the spawn
@@ -79,6 +82,7 @@ class Player:
                         self._Update()
                     else:
                         # obtain xpos
+                        self.decreaseFuel(dx)
                         self.xpos -= dx
                         self.true_xpos -= dx
                         self.xpos_cannon = self.xpos - int(0.25 * self.spr_player_left.get_width())
@@ -95,6 +99,7 @@ class Player:
                         self._Update()
                     else:
                         # obtain xpos
+                        self.decreaseFuel(dx)
                         self.xpos += dx
                         self.true_xpos += dx
                         self.xpos_cannon = self.xpos + int(0.25 * self.spr_player_right.get_width())
@@ -143,12 +148,18 @@ class Player:
 
 
     # decreases fuel
-    def decreaseFuel(self):
+    def decreaseFuel(self, dx):
         if self.fuelAmount > 0:
-            self.fuelAmount -= 1
+            self.fuelAmount -= dx
         else:
             self.canMove = False
 
+    # if fuel is empty, returns true
+    def isFuelEmpty(self):
+        if self.fuelAmount <= 0:
+            return True
+        else:
+            return False
 
     # blit's the player object to screen, updating its position
     def _Update(self):
@@ -163,6 +174,10 @@ class Player:
         # draws health bar over player
         pygame.draw.rect(self.screen, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 20, 65, 10))
         pygame.draw.rect(self.screen, (102,255,102), (self.hitbox[0], self.hitbox[1] - 20, 65 - (5 * (13 - self.health)), 10))
+
+        # draws fuel bar
+        pygame.draw.rect(self.screen, (255, 0, 0), ((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65, 10)))
+        pygame.draw.rect(self.screen, (102, 255, 102),((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65 - (9.027 * (7.2 - self.fuelAmount)), 10)))
 
     # end of _Update
 

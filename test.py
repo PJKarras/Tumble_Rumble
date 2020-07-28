@@ -13,6 +13,7 @@ DISCLAIMER:
     you have been warned!!!
 '''
 import game_ui
+import menu_gui
 from menu_gui import UIElement, right_arrow, left_arrow, right_arrowX, right_arrowY, left_arrowX
 
 # initialize pygame
@@ -89,6 +90,9 @@ def optionsMenu(screen):
 
 
 def startMenu(screen):
+    # player count
+    playerCount = 1
+
     how_many_title = UIElement(
         center_position=(DISPLAY_WIDTH/2, DISPLAY_HEIGHT*.125),
         font_size=55,
@@ -112,8 +116,17 @@ def startMenu(screen):
         text_rgb=WHITE,
         text='Return to Main Menu'
     )
+
     done = False
     while not done:
+        playerCount_icon = UIElement(
+            center_position=(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT * .33),
+            font_size=50,
+            bg_rgb=BLUE,
+            text_rgb=WHITE,
+            text=str(playerCount)
+        )
+
         screen.fill(BLUE)
 
         for event in pygame.event.get():
@@ -122,14 +135,25 @@ def startMenu(screen):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if startButton.rect.collidepoint(pos):
-                    startGame(screen)
+                    startGame(screen, playerCount)
                     return
+                if game_ui.left_arrow_button.rect.collidepoint(pos):
+                    if playerCount == 1:
+                        pass
+                    else:
+                        playerCount -= 1
+                if game_ui.right_arrow_button.rect.collidepoint(pos):
+                    if playerCount == 4:
+                        pass
+                    else:
+                        playerCount += 1
                 if returnButton.rect.collidepoint(pos):
                     done = True
 
         how_many_title.draw(screen)
-        screen.blit(right_arrow, (int(right_arrowX), int(right_arrowY)))
-        screen.blit(left_arrow, (int(left_arrowX), int(right_arrowY)))
+        game_ui.right_arrow_button.draw(screen)
+        game_ui.left_arrow_button.draw(screen)
+        playerCount_icon.draw(screen)
         startButton.update(pygame.mouse.get_pos())
         startButton.draw(screen)
         returnButton.update(pygame.mouse.get_pos())
@@ -137,8 +161,8 @@ def startMenu(screen):
         pygame.display.flip()
 
 
-def startGame(screen):
-    start(screen)
+def startGame(screen, how_many_players):
+    start(screen, how_many_players)
 
 
 def main():
@@ -203,7 +227,7 @@ def main():
 
 
 # start game
-def start(screen):
+def start(screen, how_many_players):
 
     fuel_text = UIElement(
         center_position=(DISPLAY_WIDTH * .265, DISPLAY_WIDTH * .01),
@@ -217,7 +241,9 @@ def start(screen):
     pygame.draw.circle(screen, WHITE, [80, 80], 80, 0)
 
     # initialize test player and helping attributes
-    player = Player(playerImg, cannonImg, 1, screen, numpyPixel)
+    playerList = []
+    for i in range(how_many_players):
+        playerList.append(Player(playerImg, cannonImg, i+1, screen, numpyPixel))
     player_dx = 0
     event_key = None
 
@@ -226,7 +252,18 @@ def start(screen):
     item_menu_open = False
     movement_on = False
     running = True
+    currentPlayer = 0
+    playerName = "Player " + str(currentPlayer+1)
     while running:
+
+        player_turn = UIElement(
+            center_position=(DISPLAY_WIDTH * .70, DISPLAY_WIDTH * .015),
+            font_size=20,
+            bg_rgb=SKYBLUE,
+            text_rgb=WHITE,
+            text="Turn: " + playerName
+        )
+
         if weapon_menu_open:
             game_ui.weapons_holder.draw(screen)
             for i in game_ui.weapons_list:
@@ -245,25 +282,30 @@ def start(screen):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
-
             if movement_on:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a or event.key == pygame.K_d or event.key == pygame.K_h:
                         event_key = event.key
                         player_dx = 0.24
-                        player.Change_Pos(player_dx, event_key)
-                        print("here")
+                        playerList[currentPlayer].Change_Pos(player_dx, event_key)
+                        #print("here")
                 elif event.type == pygame.KEYUP:
-                    print("here2")
+                    #print("here2")
                     event_key = None
                     player_dx = 0
-                    player.Change_Pos(player_dx, event_key)
+                    playerList[currentPlayer].Change_Pos(player_dx, event_key)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     if game_ui.leave_button.rect.collidepoint(pos):
                         return
                     if game_ui.move_off_button.rect.collidepoint(pos) or game_ui.move_on_button.rect.collidepoint(pos):
                         movement_on = False
+                    if game_ui.fire_button.rect.collidepoint(pos):
+                        if currentPlayer == how_many_players-1:
+                            currentPlayer = 0
+                        else:
+                            currentPlayer += 1
+                        playerName = "Player " + str(currentPlayer + 1)
             else:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
@@ -281,15 +323,26 @@ def start(screen):
                             item_menu_open = True
                     if game_ui.move_off_button.rect.collidepoint(pos) or game_ui.move_on_button.rect.collidepoint(pos):
                         movement_on = True
+                    if game_ui.fire_button.rect.collidepoint(pos):
+                        if currentPlayer == how_many_players-1:
+                            currentPlayer = 0
+                        else:
+                            currentPlayer += 1
+                        playerName = "Player " + str(currentPlayer + 1)
 
-        # add player to screen
-        player.Change_Pos(player_dx, event_key)
+        # add players to screen
+        for player in playerList:
+            if player == playerList[currentPlayer]:
+                player.Change_Pos(player_dx, event_key)
+            else:
+                player.Change_Pos(0, event_key)
 
         # to update screen, use pygame.display.update()
         for i in game_ui.button_list:
             i.update(pygame.mouse.get_pos())
             i.draw(screen)
         fuel_text.draw(surf)
+        player_turn.draw(surf)
         pygame.display.update()
         screen.fill(SKYBLUE)
         screen.blit(surf, (0, 0))
