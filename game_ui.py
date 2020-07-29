@@ -39,6 +39,9 @@ move_off = pygame.image.load("assets/move_off.png")
 right_arrow = pygame.image.load('arrow.png')
 right_arrow = pygame.transform.scale(right_arrow, (100, 80))
 left_arrow = pygame.transform.flip(right_arrow, True, False)
+aim = pygame.image.load('assets/aim.png')
+aim_glow = pygame.image.load('assets/aim_glow.png')
+reticle = pygame.image.load('assets/reticle.png')
 
 
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
@@ -215,8 +218,14 @@ right_arrow_button = GuiElement(
     image_glow=right_arrow
 )
 
+aim_button = GuiElement(
+    center_position=(display_width*.875, display_height*.05),
+    image=aim,
+    image_glow=aim_glow
+)
 
-button_list = [weapon_button, fire_button, leave_button, items_button]
+
+button_list = [weapon_button, leave_button, items_button]
 weapons_list = [missile1, missile2, missile3, atomic_icon]
 item_list = [wrench_icon, shield_icon, jetpack_icon]
 

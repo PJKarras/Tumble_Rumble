@@ -50,6 +50,9 @@ class Player:
         self.fuelAmount = 7.2
         self.canMove = True
 
+        # is it player's turn
+        self.myTurn = False
+
         # normalize the spawn
 
     # end of constructor
@@ -67,7 +70,8 @@ class Player:
 
 
     # changes the position of the player; dx = "change in x position"
-    def Change_Pos(self, dx = None, event_key = None):
+    def Change_Pos(self, myTurn, dx = None, event_key = None):
+        self.myTurn = myTurn
         if dx == None:
             self._Update()
         else:
@@ -161,6 +165,10 @@ class Player:
         else:
             return False
 
+    # aim the tank
+    def aim(self):
+        pass
+
     # blit's the player object to screen, updating its position
     def _Update(self):
         self.screen.blit(self.spr_cannon, (self.xpos_cannon, self.ypos_cannon))
@@ -176,8 +184,9 @@ class Player:
         pygame.draw.rect(self.screen, (102,255,102), (self.hitbox[0], self.hitbox[1] - 20, 65 - (5 * (13 - self.health)), 10))
 
         # draws fuel bar
-        pygame.draw.rect(self.screen, (255, 0, 0), ((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65, 10)))
-        pygame.draw.rect(self.screen, (102, 255, 102),((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65 - (9.027 * (7.2 - self.fuelAmount)), 10)))
+        if self.myTurn:
+            pygame.draw.rect(self.screen, (255, 0, 0), ((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65, 10)))
+            pygame.draw.rect(self.screen, (102, 255, 102),((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65 - (9.027 * (7.2 - self.fuelAmount)), 10)))
 
     # end of _Update
 
