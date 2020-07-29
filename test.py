@@ -289,6 +289,9 @@ def start(screen, how_many_players):
                     if event.key == pygame.K_a or event.key == pygame.K_d or event.key == pygame.K_h:
                         event_key = event.key
                         player_dx = 0.24
+                        stopMovement = playerList[currentPlayer].isFuelEmpty()
+                        if stopMovement:
+                            player_dx = 0
                         playerList[currentPlayer].Change_Pos(True, player_dx, event_key)
                 elif event.type == pygame.KEYUP:
                     event_key = None
@@ -308,6 +311,7 @@ def start(screen, how_many_players):
                     else:
                         if game_ui.fire_button.rect.collidepoint(pos):
                             aim_selected = True
+                            playerList[currentPlayer].fuelAmount = 5
                             if currentPlayer == how_many_players - 1:
                                 currentPlayer = 0
                             else:
@@ -342,6 +346,7 @@ def start(screen, how_many_players):
                     else:
                         if game_ui.fire_button.rect.collidepoint(pos):
                             aim_selected = True
+                            playerList[currentPlayer].fuelAmount = 5
                             if currentPlayer == how_many_players-1:
                                 currentPlayer = 0
                             else:
@@ -351,6 +356,9 @@ def start(screen, how_many_players):
         # add players to screen
         for player in playerList:
             if player == playerList[currentPlayer]:
+                stopMovement = playerList[currentPlayer].isFuelEmpty()
+                if stopMovement:
+                    player_dx = 0
                 player.Change_Pos(True, player_dx, event_key)
             else:
                 player.Change_Pos(False, 0, event_key)

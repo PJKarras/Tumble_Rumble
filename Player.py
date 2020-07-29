@@ -47,7 +47,7 @@ class Player:
         self.visible = True
 
         # create fuel bar
-        self.fuelAmount = 7.2
+        self.fuelAmount = 5
         self.canMove = True
 
         # is it player's turn
@@ -153,8 +153,8 @@ class Player:
 
     # decreases fuel
     def decreaseFuel(self, dx):
-        if self.fuelAmount > 0:
-            self.fuelAmount -= dx
+        if self.fuelAmount >= 0:
+            self.fuelAmount -= .01
         else:
             self.canMove = False
 
@@ -186,7 +186,7 @@ class Player:
         # draws fuel bar
         if self.myTurn:
             pygame.draw.rect(self.screen, (255, 0, 0), ((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65, 10)))
-            pygame.draw.rect(self.screen, (102, 255, 102),((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65 - (9.027 * (7.2 - self.fuelAmount)), 10)))
+            pygame.draw.rect(self.screen, (102, 255, 102),((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65 - (13 * (5 - self.fuelAmount)), 10)))
 
     # end of _Update
 
