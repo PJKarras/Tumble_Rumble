@@ -24,6 +24,12 @@ class Player:
         # need to flip cannon sprite to create left facing cannon sprite
         self.spr_cannon_left = pygame.transform.flip(spr_cannon, True, False)
 
+        # need to set shield icon for when applicable
+        spr_shield = pygame.image.load("assets/animations/shield/shieldPop7.png")
+        new_size = (int(spr_shield.get_width() * 0.5), int(spr_shield.get_height() * 0.5))
+        self.spr_shield = pygame.transform.scale(spr_shield, new_size)
+        self.spr_shield.fill((255, 255, 255, 128), None, pygame.BLEND_RGBA_MULT)
+
         # determine which way the tank is facing at time of spawn
         # we will also use this to determine spawn position of cannon
         # this also normalizes the sprite position
@@ -40,6 +46,7 @@ class Player:
             self.xpos_cannon = self.xpos - int(0.25 * self.spr_player_left.get_width())
             self.ypos_cannon = self.ypos
         self.items = []
+        self.hasShield = False
 
         # create hit-box
         self.hitbox = (self.xpos + 1, self.ypos + 1, self.spr_player.get_width(), self.spr_player.get_height()+20)
@@ -159,7 +166,7 @@ class Player:
         return self.items
 
     
-    def removeItems(self, index):
+    def removeItem(self, index):
         self.items.pop(index)
 
     # if player is hit, call this function
@@ -192,6 +199,8 @@ class Player:
     def _Update(self):
         self.screen.blit(self.spr_cannon, (self.xpos_cannon, self.ypos_cannon))
         self.screen.blit(self.spr_player, (self.xpos, self.ypos))
+        if self.hasShield:
+            self.screen.blit(self.spr_shield, (self.xpos, self.ypos))
         self.hitbox = (self.xpos, self.ypos + 20, self.spr_player.get_width(), self.spr_player.get_height()-20)
 
         # for testing hitbox
@@ -208,6 +217,18 @@ class Player:
             pygame.draw.rect(self.screen, (102, 255, 102),((DISPLAY_WIDTH * .24, DISPLAY_WIDTH * .02), (65 - (13 * (5 - self.fuelAmount)), 10)))
 
     # end of _Update
+    
+    
+    def addShield(self):
+        self.hasShield = True
+
+    def removeShield(self):
+        self.hasShield = False
+
+    def repair(self):
+        self.health += 3
+        if self.health > 13:
+            self.health = 13
 
 
 # end of Player class

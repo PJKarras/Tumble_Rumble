@@ -285,10 +285,6 @@ def start(screen, how_many_players):
                 i.draw(screen)
         if item_menu_open:
             game_ui.items_holder.draw(screen)
-            #for i in game_ui.item_list:
-            for i in playerList:
-                i.update(pygame.mouse.get_pos())
-                i.draw(screen)
             for i in playerList[currentPlayer].getItems():
                 #i.update(pygame.mouse.get_pos())
                 #i.draw(screen)
@@ -393,6 +389,19 @@ def start(screen, how_many_players):
                             else:
                                 currentPlayer += 1
                             playerName = "Player " + str(currentPlayer + 1)
+        if item_menu_open:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if game_ui.item_list[0].rect.collidepoint(pos):
+                    playerList[currentPlayer].repair()
+                    for i in range(0, len(playerList[currentPlayer].getItems())):
+                        if playerList[currentPlayer].getItems()[i].itemName() == "wrench":
+                            playerList[currentPlayer].removeItem(i)
+                if game_ui.item_list[1].rect.collidepoint(pos):
+                    playerList[currentPlayer].addShield()
+                    for i in range(0, len(playerList[currentPlayer].getItems())):
+                        if playerList[currentPlayer].getItems()[i].itemName() == "shield":
+                            playerList[currentPlayer].removeItem(i)
 
         # add players to screen
         for player in playerList:
