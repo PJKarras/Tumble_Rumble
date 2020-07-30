@@ -2,6 +2,7 @@ from Player import Player
 import os, sys
 import pygame
 import numpy
+from items import shield, bomb, wrench, jetPack
 from gameTools import perlin
 from pygame.locals import *
 from flatSlope import get_random_pix_map, get_slope_pix_map, collision_circle
@@ -247,6 +248,14 @@ def start(screen, how_many_players):
     player_dx = 0
     event_key = None
 
+    # test list of items
+    newWrench = wrench(int(0.25 * screen.get_width()), screen, numpyPixel)
+    newShield = shield(int(0.3 * screen.get_width()), screen, numpyPixel)
+
+    itemsRendered = []
+    itemsRendered.append(newShield)
+    itemsRendered.append(newWrench)
+
     # game loop
     weapon_menu_open = False
     item_menu_open = False
@@ -273,7 +282,8 @@ def start(screen, how_many_players):
                 i.draw(screen)
         if item_menu_open:
             game_ui.items_holder.draw(screen)
-            for i in game_ui.item_list:
+            #for i in game_ui.item_list:
+            for i in playerList[currentPlayer]
                 i.update(pygame.mouse.get_pos())
                 i.draw(screen)
         if movement_on:
@@ -362,6 +372,13 @@ def start(screen, how_many_players):
                 player.Change_Pos(True, player_dx, event_key)
             else:
                 player.Change_Pos(False, 0, event_key)
+
+        # add items to screen
+        for i in range(0, len(itemsRendered)):
+            itemsRendered[i].update()
+            if abs(itemsRendered[i].getXPos() - playerList[currentPlayer].getXPos()) < 25:
+                if len(playerList[currentPlayer].getItems()) < 4:
+                    playerList[currentPlayer].addItem(itemsRendered.pop(i))
 
         # to update screen, use pygame.display.update()
         for i in game_ui.button_list:
