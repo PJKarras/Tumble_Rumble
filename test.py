@@ -46,11 +46,19 @@ pygame.display.set_icon(icon)
 playerRawImg = pygame.image.load("assets/tanks/tank_red.png")
 newSize = (int(playerRawImg.get_width() * 0.25), int(playerRawImg.get_height() * 0.25))
 playerImg = pygame.transform.scale(playerRawImg, newSize)
+player2Img = pygame.transform.scale(pygame.image.load("assets/tanks/tank_blue.png"), newSize)
+player3Img = pygame.transform.scale(pygame.image.load("assets/tanks/tank_green.png"), newSize)
+player4Img = pygame.transform.scale(pygame.image.load("assets/tanks/tank_black.png"), newSize)
+player5Img = pygame.transform.scale(pygame.image.load("assets/tanks/tank_pink.png"), newSize)
 
 # Cannon
 cannonRawImg = pygame.image.load("assets/cannons/cannon_red.png")
 newSize = (int(cannonRawImg.get_width() * 0.25), int(cannonRawImg.get_height() * 0.25))
 cannonImg = pygame.transform.scale(cannonRawImg, newSize)
+cannon2Img = pygame.transform.scale(pygame.image.load("assets/cannons/cannon_blue.png"), newSize)
+cannon3Img = pygame.transform.scale(pygame.image.load("assets/cannons/cannon_green.png"), newSize)
+cannon4Img = pygame.transform.scale(pygame.image.load("assets/cannons/cannon_black.png"), newSize)
+cannon5Img = pygame.transform.scale(pygame.image.load("assets/cannons/cannon_pink.png"), newSize)
 
 xMax = DISPLAY_WIDTH
 yMax = DISPLAY_HEIGHT
@@ -246,7 +254,18 @@ def start(screen, how_many_players):
     # initialize test player and helping attributes
     playerList = []
     for i in range(how_many_players):
-        playerList.append(Player(playerImg, cannonImg, i+1, screen, numpyPixel))
+        if i == 0:
+            playerList.append(Player(playerImg, cannonImg, i+1, screen, numpyPixel))
+        elif i == 1:
+            playerList.append(Player(player2Img, cannon2Img, i+1, screen, numpyPixel))
+        elif i == 2:
+            playerList.append(Player(player3Img, cannon3Img, i+1, screen, numpyPixel))
+        elif i == 3:
+            playerList.append(Player(player4Img, cannon4Img, i+1, screen, numpyPixel))
+        elif i == 4:
+            playerList.append(Player(player5Img, cannon5Img, i+1, screen, numpyPixel))
+        else:
+            playerList.append(Player(playerImg, cannonImg, i+1, screen, numpyPixel))
     player_dx = 0
     event_key = None
 
@@ -276,6 +295,10 @@ def start(screen, how_many_players):
             text_rgb=WHITE,
             text="Turn: " + playerName
         )
+
+        for i in range(0, len(playerList)):
+            if playerList[i].getHealth() <= 0:
+                playerList[i].pop()
 
         if weapon_menu_open:
             game_ui.weapons_holder.draw(screen)
@@ -380,6 +403,10 @@ def start(screen, how_many_players):
                                         abs(player.true_ypos-coord_coll[1]) < 25):
                                         # hit player
                                         print("HIT PLAYER")
+                                        if player.shieldEquipped():
+                                            player.removeShield()
+                                        else:
+                                            player.hit()
 
                             playerList[currentPlayer].fuelAmount = 5
                             if currentPlayer == how_many_players-1:
