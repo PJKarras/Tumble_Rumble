@@ -8,7 +8,6 @@ from items import shield, bomb, wrench, jetPack
 from gameTools import perlin
 from pygame.locals import *
 from flatSlope import get_random_pix_map, get_slope_pix_map, collision_circle
-import time
 
 '''
 DISCLAIMER:
@@ -376,7 +375,6 @@ def start(screen, how_many_players):
                             if coll_flag:
                                 numpyPixel, colorNumpyArray = destroy_terrain_circle(coord_coll,1000,numpyPixel, colorNumpyArray)
                                 pygame.display.update()
-                                time.sleep(3)
                                 for player in playerList:
                                     if(abs(player.true_xpos-coord_coll[0]) < 25 and
                                         abs(player.true_ypos-coord_coll[1]) < 25):
