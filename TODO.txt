@@ -1,3 +1,5 @@
 Terrain:
+	Terrain destruction and blitting
+	Fix Return of pixelarray
 	Bedrock layer	
 	Beautification of terrain (optional)

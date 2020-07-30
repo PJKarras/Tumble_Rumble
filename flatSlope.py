@@ -10,6 +10,10 @@ WHITE = (250, 250, 250)
 GREEN = (0, 110, 0)
 SKYBLUE = (100, 190, 255)
 
+# create the screen
+DISPLAY_WIDTH = 1280
+DISPLAY_HEIGHT = 720
+
 def get_random_pix_map(DISPLAYSURF, displayW, displayH, maxHillHeight, freqOfHills=2):
     # Creation of 2d pixel matrix, will store 1's for ground, 0 for sky
     collisionNumpyArray = numpy.zeros((displayH, displayW))
@@ -59,6 +63,7 @@ def get_random_pix_map(DISPLAYSURF, displayW, displayH, maxHillHeight, freqOfHil
         # Set 1 values for pixel matrix
         for index in range(displayH - 1, displayH - 1 - currentHeight, -1):
             collisionNumpyArray[index][x] = 1
+    collisionNumpyArray[719,0:]=1
     par.close()
     #DISPLAYSURF.blit(surf, (0, 0))
     colorNumpyArray = pygame.surfarray.array3d(surf)
@@ -156,6 +161,8 @@ def destroy_terrain_circle(center_impact, round_size, collision_array, terrain_a
         for col in range(0, diameter+1):
             circle_func_res = (col-r)**2 + (row-r)**2
             if circle_func_res <= r**2:
+                if(x_rem+row >= DISPLAY_WIDTH or y_rem+col >= DISPLAY_HEIGHT):
+                    continue
                 terrain_array[x_rem+row, y_rem+col] = SKYBLUE
                 collision_array[y_rem+col, x_rem+row] = 0
     return collision_array, terrain_array

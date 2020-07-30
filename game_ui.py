@@ -1,4 +1,3 @@
-import pygame
 import pygame.freetype
 from pygame.sprite import Sprite
 from pygame.rect import Rect
@@ -9,7 +8,9 @@ display_width = 1280
 GRAY = (128, 128, 128)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+SKYBLUE = (100, 190, 255)
 gui_block = Rect(0, 525, 800, 75)
+
 weapons = pygame.image.load("assets/Weapons.png")
 weapons_glow = pygame.image.load("assets/Weapons_glow.png")
 fire = pygame.image.load("assets/fire.png")
@@ -18,15 +19,29 @@ items = pygame.image.load("assets/items.png")
 items_glow = pygame.image.load("assets/items_glow.png")
 leave = pygame.image.load("assets/leave.png")
 leave_glow = pygame.image.load("assets/leave_glow.png")
-missile = pygame.transform.scale(pygame.image.load("assets/missile.png"), (180, 60))
-missileX2 = pygame.transform.scale(pygame.image.load("assets/missileX2.png"), (180, 60))
-missileX3 = pygame.transform.scale(pygame.image.load("assets/missileX3.png"), (180, 60))
-atomic = pygame.transform.scale(pygame.image.load("assets/atomic.png"), (180, 60))
+missile = pygame.image.load("assets/missile.png")
+missile_glow = pygame.image.load("assets/missile_glow.png")
+missileX2 = pygame.image.load("assets/missileX2.png")
+missileX2_glow = pygame.image.load("assets/missileX2_glow.png")
+missileX3 = pygame.image.load("assets/missileX3.png")
+missileX3_glow = pygame.image.load("assets/missileX3_glow.png")
+atomic = pygame.image.load("assets/atomic.png")
+atomic_glow = pygame.image.load("assets/atomic_glow.png")
 weapon_item_holder = pygame.image.load("assets/weapon_item_holder.png")
-wrench = pygame.transform.scale(pygame.image.load("assets/wrench.png"), (180, 60))
-jetpack = pygame.transform.scale(pygame.image.load("assets/jetpack.png"), (180, 60))
+wrench = pygame.image.load("assets/wrench.png")
+wrench_glow = pygame.image.load("assets/wrench_glow.png")
+jetpack = pygame.image.load("assets/jetpack.png")
+jetpack_glow = pygame.image.load("assets/jetpack_glow.png")
+shield = pygame.image.load("assets/shield.png")
+shield_glow = pygame.image.load("assets/shield_glow.png")
 move_on = pygame.image.load("assets/move_on.png")
 move_off = pygame.image.load("assets/move_off.png")
+right_arrow = pygame.image.load('arrow.png')
+right_arrow = pygame.transform.scale(right_arrow, (100, 80))
+left_arrow = pygame.transform.flip(right_arrow, True, False)
+aim = pygame.image.load('assets/aim.png')
+aim_glow = pygame.image.load('assets/aim_glow.png')
+reticle = pygame.image.load('assets/reticle.png')
 
 
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
@@ -144,48 +159,111 @@ move_on_button = GuiElement(
 )
 
 move_off_button = GuiElement(
-    center_position=(display_width * .15, display_height * .03),
+    center_position=(display_width * .15, display_height*.03),
     image=move_off,
     image_glow=move_off
 )
 
-button_list = [weapon_button, fire_button, leave_button, items_button]
+missile1 = GuiElement(
+    center_position=(display_width * .365, (display_height * .03)+50),
+    image=missile,
+    image_glow=missile_glow
+)
+
+missile2 = GuiElement(
+    center_position=(display_width * .435, (display_height * .03)+50),
+    image=missileX2,
+    image_glow=missileX2_glow
+)
+
+missile3 = GuiElement(
+    center_position=(display_width * .365, (display_height * .03)+120),
+    image=missileX3,
+    image_glow=missileX3_glow
+)
+
+atomic_icon = GuiElement(
+    center_position=(display_width * .435, (display_height * .03)+120),
+    image=atomic,
+    image_glow=atomic_glow
+)
+
+wrench_icon = GuiElement(
+    center_position=(display_width * .515, (display_height * .03)+52),
+    image=wrench,
+    image_glow=wrench_glow
+)
+
+shield_icon = GuiElement(
+    center_position=(display_width * .585, (display_height * .03)+52),
+    image=shield,
+    image_glow=shield_glow
+)
+
+jetpack_icon = GuiElement(
+    center_position=(display_width * .515, (display_height * .03)+120),
+    image=jetpack,
+    image_glow=jetpack_glow
+)
+
+left_arrow_button = GuiElement(
+    center_position=(display_width * .40, display_height * .33),
+    image=left_arrow,
+    image_glow=left_arrow
+)
+
+right_arrow_button = GuiElement(
+    center_position=(display_width * .60, display_height * .33),
+    image=right_arrow,
+    image_glow=right_arrow
+)
+
+aim_button = GuiElement(
+    center_position=(display_width*.875, display_height*.05),
+    image=aim,
+    image_glow=aim_glow
+)
 
 
-def start(screen):
-
-    weapon_menu_open = False
-    item_menu_open = False
-    done = False
-    while not done:
-        screen.fill(BLACK)
-        if weapon_menu_open:
-            weapons_holder.draw(screen)
-        if item_menu_open:
-            items_holder.draw(screen)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                if leave_button.rect.collidepoint(pos):
-                    return
-                if weapon_button.rect.collidepoint(pos):
-                    if weapon_menu_open:
-                        weapon_menu_open = False
-                    else:
-                        weapon_menu_open = True
-                if items_button.rect.collidepoint(pos):
-                    if item_menu_open:
-                        item_menu_open = False
-                    else:
-                        item_menu_open = True
+button_list = [weapon_button, leave_button, items_button]
+weapons_list = [missile1, missile2, missile3, atomic_icon]
+item_list = [wrench_icon, shield_icon, jetpack_icon]
 
 
-        #item_button.update(pygame.mouse.get_pos())
-        #item_button.draw(screen)
-        for i in button_list:
-            i.update(pygame.mouse.get_pos())
-            i.draw(screen)
-        pygame.display.flip()
+# def start(screen):
+#
+#     weapon_menu_open = False
+#     item_menu_open = False
+#     done = False
+#     while not done:
+#         screen.fill(BLACK)
+#         if weapon_menu_open:
+#             weapons_holder.draw(screen)
+#         if item_menu_open:
+#             items_holder.draw(screen)
+#
+#         for event in pygame.event.get():
+#             if event.type == pygame.QUIT:
+#                 exit()
+#             elif event.type == pygame.MOUSEBUTTONDOWN:
+#                 pos = pygame.mouse.get_pos()
+#                 if leave_button.rect.collidepoint(pos):
+#                     return
+#                 if weapon_button.rect.collidepoint(pos):
+#                     if weapon_menu_open:
+#                         weapon_menu_open = False
+#                     else:
+#                         weapon_menu_open = True
+#                 if items_button.rect.collidepoint(pos):
+#                     if item_menu_open:
+#                         item_menu_open = False
+#                     else:
+#                         item_menu_open = True
+#
+#
+#         #item_button.update(pygame.mouse.get_pos())
+#         #item_button.draw(screen)
+#         for i in button_list:
+#             i.update(pygame.mouse.get_pos())
+#             i.draw(screen)
+#         pygame.display.flip()
