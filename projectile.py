@@ -29,33 +29,23 @@ class Projectile(object):
     # Returns true and the coordinates as a tuple if there is a collision
     # Returns false and the coordinates (0,0) if there is no collision
     def animate_proj(self,x_ret,y_ret,xpos_cannon,ypos_cannon,numpy_pixel):
-        print("Before update: (", x_ret, y_ret,") (",xpos_cannon,ypos_cannon,")")
-        print("~~~INIT V:", self.initial_v)
-        print("Changes:", self.x_change,self.y_change)
         self.update_values(x_ret,y_ret,xpos_cannon,ypos_cannon)
-        print("After update: (", x_ret, y_ret,") (",xpos_cannon,ypos_cannon,")")
-        print("~~~INIT V:", self.initial_v)
-        print("Changes:", self.x_change,self.y_change)
-        print("##ANGLEEEEEE:", self.angle)
-        print("sinnnLEEEEEE:", math.sin(self.angle))
         init_x = self.x
         init_y = DISPLAY_HEIGHT-self.y
         flip_shot = 1
         if(self.x_change<0):
             flip_shot = -1
         blit_counter = 0
-        for sec in [x * 0.001 for x in range(0, 10000)]:
-            print("Blit: ",sec, "has: (",self.x,self.y,")")
+        for sec in [x * 0.01 for x in range(0, 10000)]:
             # if doesnt go out of bounds
             if not (self.x > DISPLAY_WIDTH or self.y > DISPLAY_HEIGHT or 
                 self.x < 0 or self.y < 0):
                 if numpy_pixel[int(self.y),int(self.x)] == 1:
                     return True, (int(self.x),int(self.y))
-                    print("COLLSION-----------------COLLSION-----------------")
             else:
                 break
             blit_counter += 1
-            if blit_counter % 600 == 0:
+            if blit_counter % 40 == 0:
                 self.screen.blit(self.round_img, (self.x,self.y))
 
             self.x = (init_x + (flip_shot*(self.initial_v*sec*math.cos(self.angle))))
@@ -74,8 +64,8 @@ class Projectile(object):
     def update_values(self,x_ret,y_ret,xpos_cannon,ypos_cannon):
         self.x_ret = x_ret
         self.y_ret = y_ret
-        self.x = xpos_cannon
-        self.y = ypos_cannon
+        self.x = xpos_cannon + 15
+        self.y = ypos_cannon + 15
         self.y_change = float(abs(self.y_ret-ypos_cannon))
         self.x_change = float((self.x_ret-xpos_cannon))
         self.angle = math.atan(self.y_change/self.x_change)
