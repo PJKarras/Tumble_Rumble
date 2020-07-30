@@ -238,7 +238,7 @@ def start(screen, how_many_players):
         text="Fuel"
     )
 
-    numpyPixel, surf = get_random_pix_map(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
+    numpyPixel, colorNumpyArray = get_random_pix_map(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT, 400)
     pygame.draw.circle(screen, WHITE, [80, 80], 80, 0)
 
     # initialize test player and helping attributes
@@ -283,7 +283,7 @@ def start(screen, how_many_players):
         if item_menu_open:
             game_ui.items_holder.draw(screen)
             #for i in game_ui.item_list:
-            for i in playerList[currentPlayer]
+            for i in playerList[currentPlayer]:
                 i.update(pygame.mouse.get_pos())
                 i.draw(screen)
         if movement_on:
@@ -395,11 +395,11 @@ def start(screen, how_many_players):
                 screen.blit(game_ui.reticle, (pygame.mouse.get_pos()))
                 last_pos = pygame.mouse.get_pos()
             screen.blit(game_ui.reticle, last_pos)
-        fuel_text.draw(surf)
-        player_turn.draw(surf)
+        fuel_text.draw(screen)
+        player_turn.draw(screen)
         pygame.display.update()
-        screen.fill(SKYBLUE)
-        screen.blit(surf, (0, 0))
+        terrainSurface = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+        pygame.surfarray.blit_array(terrainSurface, colorNumpyArray)
 
 
 main()
