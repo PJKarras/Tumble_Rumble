@@ -1,4 +1,6 @@
 from Player import Player
+from flatSlope import destroy_terrain_circle
+from projectile import Projectile
 import os, sys
 import pygame
 import numpy
@@ -283,7 +285,7 @@ def start(screen, how_many_players):
         if item_menu_open:
             game_ui.items_holder.draw(screen)
             #for i in game_ui.item_list:
-            for i in playerList[currentPlayer]:
+            for i in playerList:
                 i.update(pygame.mouse.get_pos())
                 i.draw(screen)
         if movement_on:
@@ -356,6 +358,20 @@ def start(screen, how_many_players):
                     else:
                         if game_ui.fire_button.rect.collidepoint(pos):
                             aim_selected = True
+                            coll_flag, coord_coll = playerList[currentPlayer].projectile.animate_proj(
+                                last_pos[0], last_pos[1],
+                                playerList[currentPlayer].xpos_cannon, 
+                                playerList[currentPlayer].ypos_cannon,
+                                numpyPixel)
+                            # If there was a collision, destroy terrain and damage tank
+                            if coll_flag:
+                                numpyPixel, colorNumpyArray = destroy_terrain_circle(coord_coll,1000,numpyPixel, colorNumpyArray)
+                                for player in playerList:
+                                    if(abs(player.true_xpos-coord_coll[0]) < 25 and
+                                        abs(player.true_ypos-coord_coll[1]) < 25):
+                                        # hit player
+                                        print("HIT PLAYER")
+
                             playerList[currentPlayer].fuelAmount = 5
                             if currentPlayer == how_many_players-1:
                                 currentPlayer = 0

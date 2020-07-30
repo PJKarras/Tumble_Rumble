@@ -1,4 +1,5 @@
 import pygame
+from projectile import Projectile
 
 DISPLAY_WIDTH = 1280
 DISPLAY_HEIGHT = 720
@@ -54,6 +55,8 @@ class Player:
         # is it player's turn
         self.myTurn = False
 
+        # Projectile object for tank
+        self.projectile = Projectile(self.xpos_cannon,self.ypos_cannon-20,self.xpos_cannon,self.ypos_cannon,self.screen)
         # normalize the spawn
 
     # end of constructor
