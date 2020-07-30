@@ -283,9 +283,18 @@ def start(screen, how_many_players):
         if item_menu_open:
             game_ui.items_holder.draw(screen)
             #for i in game_ui.item_list:
-            for i in playerList[currentPlayer]:
-                i.update(pygame.mouse.get_pos())
-                i.draw(screen)
+            for i in playerList[currentPlayer].getItems():
+                #i.update(pygame.mouse.get_pos())
+                #i.draw(screen)
+                if i.itemName() == "wrench":
+                    game_ui.item_list[0].update(pygame.mouse.get_pos())
+                    game_ui.item_list[0].draw(screen)
+                if i.itemName() == "shield":
+                    game_ui.item_list[1].update(pygame.mouse.get_pos())
+                    game_ui.item_list[1].draw(screen)
+                if i.itemName() == "jetPack":
+                    game_ui.item_list[2].update(pygame.mouse.get_pos())
+                    game_ui.item_list[2].draw(screen)
         if movement_on:
             game_ui.move_on_button.draw(screen)
         else:
