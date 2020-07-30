@@ -38,6 +38,7 @@ class Player:
             self.spr_cannon = self.spr_cannon_left
             self.xpos_cannon = self.xpos - int(0.25 * self.spr_player_left.get_width())
             self.ypos_cannon = self.ypos
+        self.items = []
 
         # create hit-box
         self.hitbox = (self.xpos + 1, self.ypos + 1, self.spr_player.get_width(), self.spr_player.get_height()+20)
@@ -142,6 +143,21 @@ class Player:
                 check_ahead = self.pixelMatrix[int(self.true_ypos), int(self.true_xpos)]
             self.ypos += 1
             self.true_ypos += 1
+            
+    def getXPos(self):
+        return self.true_xpos
+
+    
+    def addItem(self, item):
+        self.items.append(item)
+
+        
+    def getItems(self):
+        return self.items
+
+    
+    def removeItems(self, index):
+        self.items.pop(index)
 
     # if player is hit, call this function
     def hit(self):
