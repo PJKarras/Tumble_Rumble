@@ -171,10 +171,12 @@ class Player:
 
     # if player is hit, call this function
     def hit(self):
-        if self.health > 0:
-            self.health -= 1
-        else:
-            self.visible = False
+        self.health -= 2
+        if self.health < 0:
+            self.health = 0
+
+    def getHealth(self):
+        return self.health
 
 
     # decreases fuel
@@ -224,6 +226,9 @@ class Player:
 
     def removeShield(self):
         self.hasShield = False
+
+    def shieldEquipped(self):
+        return self.hasShield
 
     def repair(self):
         self.health += 3
